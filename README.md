@@ -1,5 +1,7 @@
 # Codex Dream Skin · 风堇 Windows 主题版
 
+> **上游来源与署名：** 本仓库基于 [Fei-Away/Codex-Dream-Skin](https://github.com/Fei-Away/Codex-Dream-Skin)（MIT）衍生；保留原项目许可证与声明。完整说明见 [UPSTREAM.md](./UPSTREAM.md)。
+
 > 为官方 Microsoft Store 版 OpenAI Codex 提供可恢复的 Windows 外部主题。通过本机回环 CDP 注入 CSS，不修改 WindowsApps、`app.asar`、应用二进制或签名。
 
 [English](./README.en.md) · [Windows 使用说明](./windows/README.zh-CN.md) · [上游来源与署名](./UPSTREAM.md) · [MIT License](./LICENSE)
@@ -7,10 +9,10 @@
 ## 风堇 · 魔法花园 V2
 
 <p align="center">
-  <img src="./windows/theme-packs/hyacine-fengjin-magic-garden-v2/fengjin-preview-source.png" alt="风堇 · 魔法花园 V2 预览" width="900">
+  <img src="./docs/images/screenshot-windows-fengjin-v2.png" alt="风堇 · 魔法花园 V2 在 Windows Codex 中的实际运行截图" width="1280">
 </p>
 
-V2 根据参考布局重新设计：角色主视觉、花园徽章、四张嵌入式功能卡、彩色 SVG 图标、侧栏品牌、花瓣轨迹、项目栏、输入框和拍立得保持统一的奶油粉金视觉。侧栏、建议卡、项目选择和输入框依然是 Codex 的真实控件，不是整窗截图覆盖。
+上图为当前实现的实际运行截图，而非设计效果图。V2 根据参考布局重新设计：角色主视觉、花园徽章、四张嵌入式功能卡、彩色 SVG 图标、侧栏品牌、花瓣轨迹、项目栏、输入框和拍立得保持统一的奶油粉金视觉。侧栏、建议卡、项目选择和输入框依然是 Codex 的真实控件，不是整窗截图覆盖。
 
 ## 快速安装
 

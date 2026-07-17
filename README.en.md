@@ -1,5 +1,7 @@
 # Codex Dream Skin · Fengjin Windows Edition
 
+> **Upstream attribution:** This repository is derived from [Fei-Away/Codex-Dream-Skin](https://github.com/Fei-Away/Codex-Dream-Skin) (MIT). Its license and notices are retained; see [UPSTREAM.md](./UPSTREAM.md) for details.
+
 > A reversible external theme layer for the official Microsoft Store OpenAI Codex desktop app on Windows. It injects CSS through loopback CDP and never modifies WindowsApps, `app.asar`, binaries, or signatures.
 
 [中文](./README.md) · [Windows guide](./windows/README.md) · [Upstream attribution](./UPSTREAM.md) · [MIT License](./LICENSE)
@@ -7,10 +9,10 @@
 ## Fengjin · Magic Garden V2
 
 <p align="center">
-  <img src="./windows/theme-packs/hyacine-fengjin-magic-garden-v2/fengjin-preview-source.png" alt="Fengjin Magic Garden V2 preview" width="900">
+  <img src="./docs/images/screenshot-windows-fengjin-v2.png" alt="Fengjin Magic Garden V2 running in Windows Codex" width="1280">
 </p>
 
-V2 rebuilds the supplied layout with a character-led hero, garden badge, four overlapping action cards, coloured SVG icons, branded sidebar, petal trail, project bar, composer, and polaroid. The sidebar, cards, project picker, and composer remain real Codex controls rather than a whole-window image overlay.
+The image above is a screenshot of the current running implementation, not a design mock-up. V2 rebuilds the supplied layout with a character-led hero, garden badge, four overlapping action cards, coloured SVG icons, branded sidebar, petal trail, project bar, composer, and polaroid. The sidebar, cards, project picker, and composer remain real Codex controls rather than a whole-window image overlay.
 
 ## Quick start
 
