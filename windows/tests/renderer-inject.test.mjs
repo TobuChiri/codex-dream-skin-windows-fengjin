@@ -54,6 +54,7 @@ function createFixture({ shellPresent, staleSkin = false }) {
   const makeClassList = (classes = new Set()) => ({
     add(value) { classes.add(value); },
     remove(value) { classes.delete(value); },
+    contains(value) { return classes.has(value); },
     toggle(value, enabled) {
       if (enabled) classes.add(value);
       else classes.delete(value);
@@ -94,8 +95,9 @@ function createFixture({ shellPresent, staleSkin = false }) {
       nodes.set(node.id, node);
     },
   };
+  const shellMainClasses = new Set();
   const shellMain = {
-    classList: makeClassList(),
+    classList: makeClassList(shellMainClasses),
     getBoundingClientRect() {
       return { left: 290, top: 36, width: 990, height: 784 };
     },
@@ -141,6 +143,12 @@ function createFixture({ shellPresent, staleSkin = false }) {
     querySelectorAll(selector) {
       if (selector === "aside.app-shell-left-panel button") return [newTaskButton];
       if (selector === ".dream-new-task") return newTaskClasses.has("dream-new-task") ? [newTaskButton] : [];
+      if (selector === ".dream-action-shell") {
+        return [
+          ...(shellMainClasses.has("dream-action-shell") ? [shellMain] : []),
+          ...[...nodes.values()].filter((node) => node.classList?.contains?.("dream-action-shell")),
+        ];
+      }
       if (!staleSkin) return [];
       if (selector === ".dream-home") return [staleHome];
       if (selector === ".dream-home-shell") return [staleShell];
@@ -173,6 +181,7 @@ function createFixture({ shellPresent, staleSkin = false }) {
     rootClasses,
     rootStyles,
     newTaskClasses,
+    shellMainClasses,
     revokedUrls,
     setShellPresent(value) { hasShell = value; },
   };
@@ -195,6 +204,10 @@ assert.equal(main.newTaskClasses.has("dream-new-task"), true);
 assert.equal(main.nodes.has("codex-dream-skin-style"), true);
 assert.equal(main.nodes.has("codex-dream-skin-chrome"), true);
 assert.equal(main.nodes.get("codex-dream-skin-chrome").dataset.dreamSchema, "3");
+main.context.window.__CODEX_DREAM_SKIN_STATE__.dismissHome();
+main.context.window.__CODEX_DREAM_SKIN_STATE__.ensure();
+assert.equal(main.shellMainClasses.has("dream-action-shell"), true);
+assert.equal(main.nodes.get("codex-dream-skin-chrome").classList.contains("dream-action-shell"), true);
 assert.equal(main.context.window.__CODEX_DREAM_SKIN_STATE__.cleanup(), true);
 assert.equal(main.rootClasses.has("codex-dream-skin"), false);
 assert.equal(main.rootStyles.has("--dream-tagline"), false);
@@ -206,6 +219,7 @@ assert.equal(main.context.document.documentElement.dataset.dreamTheme, undefined
 assert.equal(main.newTaskClasses.has("dream-new-task"), false);
 assert.equal(main.nodes.has("codex-dream-skin-style"), false);
 assert.equal(main.nodes.has("codex-dream-skin-chrome"), false);
+assert.equal(main.shellMainClasses.has("dream-action-shell"), false);
 assert.deepEqual(main.revokedUrls, ["blob:fixture"]);
 
 const auxiliary = createFixture({ shellPresent: false, staleSkin: true });

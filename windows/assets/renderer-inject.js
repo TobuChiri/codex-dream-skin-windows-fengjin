@@ -25,12 +25,28 @@
     existingStyle.dataset.dreamVersion = "1";
   }
 
-  const homeState = { dismissed: false };
+  const initialHomeCandidate = document.querySelector('[role="main"]:has([data-testid="home-icon"])');
+  const initialComposerText = document.querySelector(".ProseMirror")?.textContent?.trim() ?? "";
+  const resumedActionShell = Boolean(initialHomeCandidate && initialComposerText &&
+    !initialHomeCandidate.querySelector('.group\\/home-suggestions'));
+  const persistedActionShell = document.documentElement?.dataset?.dreamActionShell === "true" || resumedActionShell;
+  const persistedHome = persistedActionShell ? initialHomeCandidate : null;
+  const homeState = {
+    dismissed: persistedActionShell,
+    dismissedHome: persistedHome,
+    actionShell: persistedActionShell,
+  };
   const dismissHome = () => {
     homeState.dismissed = true;
+    homeState.dismissedHome = document.querySelector(".dream-home");
+    homeState.actionShell = true;
+    document.documentElement?.setAttribute("data-dream-action-shell", "true");
     document.querySelectorAll(".dream-home").forEach((node) => node.classList.remove("dream-home"));
     document.querySelectorAll(".dream-home-shell").forEach((node) => node.classList.remove("dream-home-shell"));
-    document.getElementById(CHROME_ID)?.classList.remove("dream-home-shell");
+    document.querySelector("main.main-surface")?.classList.add("dream-action-shell");
+    const chrome = document.getElementById(CHROME_ID);
+    chrome?.classList.remove("dream-home-shell");
+    chrome?.classList.add("dream-action-shell");
   };
   const homeClickAbort = typeof AbortController === "function" ? new AbortController() : null;
   document.addEventListener?.("click", (event) => {
@@ -62,6 +78,7 @@
     document.documentElement?.removeAttribute("data-dream-motif");
     document.documentElement?.removeAttribute("data-dream-emblem");
     document.documentElement?.removeAttribute("data-dream-theme");
+    document.documentElement?.removeAttribute("data-dream-action-shell");
     document.querySelectorAll('[data-dream-icon-centered="true"]').forEach((svg) => {
       svg.style.removeProperty("--dream-icon-shift-x");
       svg.style.removeProperty("--dream-icon-shift-y");
@@ -69,10 +86,12 @@
     });
     document.querySelectorAll(".dream-themed-icon").forEach((node) => node.remove());
     document.querySelectorAll(".dream-new-task").forEach((node) => node.classList.remove("dream-new-task"));
+    document.querySelectorAll(".dream-composer-wrap").forEach((node) => node.classList.remove("dream-composer-wrap"));
     document.querySelectorAll(".dream-nav-scheduled,.dream-nav-skills,.dream-nav-sites,.dream-nav-pulls,.dream-nav-chat")
       .forEach((node) => node.classList.remove("dream-nav-scheduled", "dream-nav-skills", "dream-nav-sites", "dream-nav-pulls", "dream-nav-chat"));
     document.querySelectorAll(".dream-home").forEach((node) => node.classList.remove("dream-home"));
     document.querySelectorAll(".dream-home-shell").forEach((node) => node.classList.remove("dream-home-shell"));
+    document.querySelectorAll(".dream-action-shell").forEach((node) => node.classList.remove("dream-action-shell"));
     document.getElementById(STYLE_ID)?.remove();
     document.getElementById(CHROME_ID)?.remove();
   };
@@ -165,6 +184,13 @@
       button.classList.toggle("dream-nav-chat", /^(聊天|Chat)/i.test(label));
     }
 
+    const composer = document.querySelector(".composer-surface-chrome");
+    const composerWrap = composer?.parentElement?.parentElement?.parentElement?.parentElement ?? null;
+    for (const candidate of document.querySelectorAll(".dream-composer-wrap")) {
+      if (candidate !== composerWrap) candidate.classList.remove("dream-composer-wrap");
+    }
+    composerWrap?.classList.add("dream-composer-wrap");
+
     let style = document.getElementById(STYLE_ID);
     if (!style) {
       style = document.createElement("style");
@@ -177,7 +203,15 @@
     }
 
     const homeCandidate = document.querySelector('[role="main"]:has([data-testid="home-icon"])');
-    if (!homeCandidate) homeState.dismissed = false;
+    const currentComposerText = document.querySelector(".ProseMirror")?.textContent?.trim() ?? "";
+    const returnedToLanding = Boolean(homeState.dismissed && homeCandidate === homeState.dismissedHome &&
+      !currentComposerText && homeCandidate?.querySelector('.group\\/home-suggestions'));
+    if (homeCandidate && (homeCandidate !== homeState.dismissedHome || returnedToLanding)) {
+      homeState.dismissed = false;
+      homeState.dismissedHome = null;
+      homeState.actionShell = false;
+      root.removeAttribute("data-dream-action-shell");
+    }
     const home = homeState.dismissed ? null : homeCandidate;
     for (const candidate of document.querySelectorAll('[role="main"].dream-home')) {
       if (candidate !== home) candidate.classList.remove("dream-home");
@@ -185,6 +219,7 @@
     if (home) home.classList.add("dream-home");
 
     shellMain.classList.toggle("dream-home-shell", Boolean(home));
+    shellMain.classList.toggle("dream-action-shell", homeState.actionShell && !home);
     let chrome = document.getElementById(CHROME_ID);
     if (!chrome || chrome.parentElement !== document.body || chrome.dataset.dreamSchema !== CHROME_SCHEMA) {
       chrome?.remove();
@@ -237,6 +272,7 @@
     chrome.style.width = `${Math.round(shellBox.width)}px`;
     chrome.style.height = `${Math.round(shellBox.height)}px`;
     chrome.classList.toggle("dream-home-shell", Boolean(home));
+    chrome.classList.toggle("dream-action-shell", homeState.actionShell && !home);
     if (home) {
       ensureSuggestionIcons(home);
       (window.requestAnimationFrame ?? ((callback) => callback()))(() => centerSuggestionIcons(home));
@@ -267,7 +303,7 @@
   const observer = new MutationObserver(scheduleEnsure);
   observer.observe(document.documentElement, { childList: true, subtree: true });
   const timer = setInterval(ensure, 5000);
-  window[STATE_KEY] = { ensure, cleanup, observer, timer, scheduler, homeClickAbort, artUrl, themeId: theme.id, version: "1.8.2" };
+  window[STATE_KEY] = { ensure, cleanup, dismissHome, observer, timer, scheduler, homeClickAbort, artUrl, themeId: theme.id, version: "1.8.3" };
   ensure();
-  return { installed: true, version: "1.8.2", themeId: theme.id };
+  return { installed: true, version: "1.8.3", themeId: theme.id };
 })(__DREAM_CSS_JSON__, __DREAM_ART_JSON__, __DREAM_THEME_JSON__)

@@ -1132,6 +1132,12 @@ html.codex-dream-skin[data-dream-theme="hyacine-fengjin-magic-garden-v2"] aside.
   font-size: 14px !important;
 }
 
+html.codex-dream-skin[data-dream-theme="hyacine-fengjin-magic-garden-v2"] aside.app-shell-left-panel button svg {
+  flex: 0 0 auto;
+  align-self: center;
+  margin-block: auto !important;
+}
+
 html.codex-dream-skin[data-dream-theme="hyacine-fengjin-magic-garden-v2"] aside.app-shell-left-panel button[aria-label^="切换模式"],
 html.codex-dream-skin[data-dream-theme="hyacine-fengjin-magic-garden-v2"] aside.app-shell-left-panel button[aria-label^="Switch mode"] {
   position: relative;
@@ -1150,13 +1156,21 @@ html.codex-dream-skin[data-dream-theme="hyacine-fengjin-magic-garden-v2"] aside.
 
 html.codex-dream-skin[data-dream-theme="hyacine-fengjin-magic-garden-v2"] aside.app-shell-left-panel button[aria-label^="切换模式"]::before,
 html.codex-dream-skin[data-dream-theme="hyacine-fengjin-magic-garden-v2"] aside.app-shell-left-panel button[aria-label^="Switch mode"]::before {
-  content: "❀ 风堇  Codex";
+  content: "风堇 Codex";
   position: absolute;
-  left: 2px;
-  top: 4px;
+  left: 6px;
+  top: 1px;
+  height: 31px;
+  display: flex;
+  align-items: center;
+  padding-left: 35px;
   color: var(--garden-v2-wine);
-  font: 700 22px/1.1 "STKaiti", "KaiTi", "Microsoft YaHei UI", serif;
-  letter-spacing: .025em;
+  font: 700 20px/1 "Microsoft YaHei UI", "Segoe UI", sans-serif;
+  letter-spacing: .015em;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cg fill='none' stroke='%23b94f5b' stroke-width='1.7'%3E%3Cellipse cx='16' cy='8' rx='3.6' ry='6.3'/%3E%3Cellipse cx='16' cy='8' rx='3.6' ry='6.3' transform='rotate(72 16 16)'/%3E%3Cellipse cx='16' cy='8' rx='3.6' ry='6.3' transform='rotate(144 16 16)'/%3E%3Cellipse cx='16' cy='8' rx='3.6' ry='6.3' transform='rotate(216 16 16)'/%3E%3Cellipse cx='16' cy='8' rx='3.6' ry='6.3' transform='rotate(288 16 16)'/%3E%3Ccircle cx='16' cy='16' r='2.4' fill='%23fff5e8'/%3E%3C/g%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: left center;
+  background-size: 29px 29px;
   opacity: 1;
   text-shadow: 0 1px white, 0 3px 9px rgba(168,75,85,.14);
 }
@@ -1165,12 +1179,12 @@ html.codex-dream-skin[data-dream-theme="hyacine-fengjin-magic-garden-v2"] aside.
 html.codex-dream-skin[data-dream-theme="hyacine-fengjin-magic-garden-v2"] aside.app-shell-left-panel button[aria-label^="Switch mode"]::after {
   content: "风堇主题  Codex App";
   position: absolute;
-  left: 28px;
-  top: 35px;
+  left: 41px;
+  top: 36px;
   margin: 0;
   color: #a86d68;
-  font: 500 10px/1 "Microsoft YaHei UI", sans-serif;
-  letter-spacing: .04em;
+  font: 500 10px/1 "Microsoft YaHei UI", "Segoe UI", sans-serif;
+  letter-spacing: .025em;
   opacity: 1;
 }
 
@@ -1184,6 +1198,15 @@ html.codex-dream-skin[data-dream-theme="hyacine-fengjin-magic-garden-v2"] aside.
   background: rgba(255,252,241,.90) !important;
   color: #a45959 !important;
   box-shadow: 0 4px 10px rgba(168,75,85,.09) !important;
+  display: grid !important;
+  place-items: center !important;
+  padding: 0 !important;
+}
+
+html.codex-dream-skin[data-dream-theme="hyacine-fengjin-magic-garden-v2"] aside.app-shell-left-panel button[aria-label*="搜索"] svg,
+html.codex-dream-skin[data-dream-theme="hyacine-fengjin-magic-garden-v2"] aside.app-shell-left-panel button[aria-label*="Search"] svg {
+  margin: 0 !important;
+  transform: none !important;
 }
 
 html.codex-dream-skin[data-dream-theme="hyacine-fengjin-magic-garden-v2"] aside.app-shell-left-panel button.dream-new-task {
@@ -1246,6 +1269,12 @@ html.codex-dream-skin[data-dream-theme="hyacine-fengjin-magic-garden-v2"] main.m
   box-shadow: inset 0 0 0 1px rgba(255,255,255,.88), -7px 0 22px rgba(168,75,85,.07) !important;
 }
 
+html.codex-dream-skin[data-dream-theme="hyacine-fengjin-magic-garden-v2"] main.main-surface.dream-action-shell {
+  background:
+    linear-gradient(180deg, rgba(255,250,242,.74), rgba(255,247,237,.91)),
+    var(--dream-art) 86% 18% / 240% auto no-repeat !important;
+}
+
 html.codex-dream-skin[data-dream-theme="hyacine-fengjin-magic-garden-v2"] main.main-surface > header.app-header-tint {
   height: 58px !important;
   min-height: 58px !important;
@@ -1283,19 +1312,23 @@ html.codex-dream-skin[data-dream-theme="hyacine-fengjin-magic-garden-v2"] .dream
   background: radial-gradient(circle at 35% 35%, #ffd7cf, #e98c8d 65%, #bf6870);
   color: #fff9e8;
   font-size: 22px;
+  line-height: 1;
+  font-family: "Segoe UI Symbol", "Microsoft YaHei UI", sans-serif;
+  transform: translateY(-.5px);
   filter: drop-shadow(0 3px 5px rgba(168,75,85,.18));
 }
 
 html.codex-dream-skin[data-dream-theme="hyacine-fengjin-magic-garden-v2"] .dream-brand b {
-  font: 650 14px/1.2 "Microsoft YaHei UI", sans-serif;
-  letter-spacing: .025em;
+  font: 700 14px/1.2 "Microsoft YaHei UI", "Segoe UI", sans-serif;
+  letter-spacing: .015em;
 }
 
 html.codex-dream-skin[data-dream-theme="hyacine-fengjin-magic-garden-v2"] .dream-brand small {
   margin-top: 4px;
   color: #9a6b67;
   font-size: 9px;
-  letter-spacing: .03em;
+  font-family: "Microsoft YaHei UI", "Segoe UI", sans-serif;
+  letter-spacing: .02em;
 }
 
 html.codex-dream-skin[data-dream-theme="hyacine-fengjin-magic-garden-v2"] .dream-sparkles {
@@ -1343,7 +1376,7 @@ html.codex-dream-skin[data-dream-theme="hyacine-fengjin-magic-garden-v2"] .dream
 html.codex-dream-skin[data-dream-theme="hyacine-fengjin-magic-garden-v2"] .dream-home > div:first-child > div:first-child > div:first-child {
   width: calc(100% - 34px) !important;
   margin-inline: auto !important;
-  transform: translateY(30px) !important;
+  transform: translateY(16px) !important;
   height: var(--dream-hero-height) !important;
   min-height: var(--dream-hero-height) !important;
   border: 1px solid rgba(220, 158, 91, .92) !important;
@@ -1415,6 +1448,13 @@ html.codex-dream-skin[data-dream-theme="hyacine-fengjin-magic-garden-v2"] .dream
 
 html.codex-dream-skin[data-dream-theme="hyacine-fengjin-magic-garden-v2"] .dream-home > div:first-child > div:nth-child(2) > div:first-child {
   margin-top: 0 !important;
+}
+
+html.codex-dream-skin[data-dream-theme="hyacine-fengjin-magic-garden-v2"] .dream-home .dream-composer-wrap {
+  width: calc(100% - 160px) !important;
+  max-width: none !important;
+  margin-left: 17px !important;
+  margin-right: auto !important;
 }
 
 html.codex-dream-skin[data-dream-theme="hyacine-fengjin-magic-garden-v2"] .dream-home .group\/home-suggestions > div {
@@ -1553,16 +1593,58 @@ html.codex-dream-skin[data-dream-theme="hyacine-fengjin-magic-garden-v2"] .dream
 html.codex-dream-skin[data-dream-theme="hyacine-fengjin-magic-garden-v2"] .dream-home .group\/home-suggestions > div > div > :nth-child(4) button > span:last-child > span::after { content: "快速定位，轻松修复"; }
 
 html.codex-dream-skin[data-dream-theme="hyacine-fengjin-magic-garden-v2"] .dream-home div:has(> .horizontal-scroll-fade-mask .group\/project-selector) {
+  position: relative;
   padding-top: 26px !important;
   border: 1px solid rgba(220,158,91,.52);
   border-bottom: 0;
   border-radius: 21px 21px 0 0 !important;
-  background: linear-gradient(180deg, rgba(255,251,240,.98), rgba(255,241,231,.96)) !important;
+  background:
+    radial-gradient(circle at 92% 28%, rgba(239,120,152,.16) 0 2px, transparent 3px),
+    radial-gradient(circle at 7% 65%, rgba(95,199,183,.13) 0 2px, transparent 3px),
+    linear-gradient(180deg, rgba(255,251,240,.98), rgba(255,241,231,.96)) !important;
+  box-shadow: inset 0 0 0 3px rgba(255,255,255,.62), 0 5px 13px rgba(168,75,85,.07);
 }
 
 html.codex-dream-skin[data-dream-theme="hyacine-fengjin-magic-garden-v2"] .dream-home div:has(> .horizontal-scroll-fade-mask .group\/project-selector)::before {
+  content: "❀  选择项目";
+  left: 17px;
+  top: 7px;
   color: var(--garden-v2-wine);
-  font-size: 11px;
+  font: 700 11px/1.2 "Microsoft YaHei UI", "Segoe UI", sans-serif;
+  letter-spacing: .035em;
+}
+
+html.codex-dream-skin[data-dream-theme="hyacine-fengjin-magic-garden-v2"] .dream-home div:has(> .horizontal-scroll-fade-mask .group\/project-selector)::after {
+  content: "✦  ❀  ♡";
+  position: absolute;
+  z-index: 2;
+  right: 18px;
+  top: 6px;
+  color: rgba(226, 112, 141, .76);
+  font: 600 12px/1.2 "Segoe UI Symbol", sans-serif;
+  letter-spacing: .16em;
+  pointer-events: none;
+}
+
+html.codex-dream-skin[data-dream-theme="hyacine-fengjin-magic-garden-v2"] .dream-home div:has(> [data-composer-utility-bar-scroll-area]) {
+  position: relative;
+  border: 1px solid rgba(220,158,91,.52) !important;
+  background:
+    radial-gradient(circle at 8% 48%, rgba(95,199,183,.13) 0 2px, transparent 3px),
+    linear-gradient(90deg, rgba(255,249,237,.98), rgba(249,231,241,.96), rgba(255,242,230,.98)) !important;
+  box-shadow: inset 0 0 0 3px rgba(255,255,255,.58), 0 5px 13px rgba(168,75,85,.07) !important;
+}
+
+html.codex-dream-skin[data-dream-theme="hyacine-fengjin-magic-garden-v2"] .dream-home div:has(> [data-composer-utility-bar-scroll-area])::after {
+  content: "✦  ❀  ♡";
+  position: absolute;
+  z-index: 2;
+  right: 17px;
+  top: 8px;
+  color: rgba(216, 102, 132, .76);
+  font: 600 12px/1 "Segoe UI Symbol", sans-serif;
+  letter-spacing: .15em;
+  pointer-events: none;
 }
 
 html.codex-dream-skin[data-dream-theme="hyacine-fengjin-magic-garden-v2"] .composer-surface-chrome {
@@ -1638,6 +1720,10 @@ html.codex-dream-skin[data-dream-theme="hyacine-fengjin-magic-garden-v2"] button
 
 @media (max-width: 1120px) {
   html.codex-dream-skin[data-dream-theme="hyacine-fengjin-magic-garden-v2"] .dream-polaroid { display: none !important; }
+  html.codex-dream-skin[data-dream-theme="hyacine-fengjin-magic-garden-v2"] .dream-home .dream-composer-wrap {
+    width: calc(100% - 34px) !important;
+    margin-inline: auto !important;
+  }
 }
 
 @media (max-width: 900px) {
