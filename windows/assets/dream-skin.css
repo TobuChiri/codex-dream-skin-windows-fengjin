@@ -1231,19 +1231,18 @@ html.codex-dream-skin[data-dream-theme="hyacine-fengjin-magic-garden-v2"] aside.
 }
 
 html.codex-dream-skin[data-dream-theme="hyacine-fengjin-magic-garden-v2"] aside.app-shell-left-panel button.dream-new-task::before {
-  content: "+";
+  content: "";
   position: relative;
   left: 0;
   width: 27px;
   height: 27px;
-  display: grid;
-  place-items: center;
   flex: 0 0 27px;
   border: 1px solid rgba(222,167,91,.66);
   border-radius: 50%;
-  background: rgba(255,253,243,.90);
-  color: var(--garden-v2-pink);
-  font: 400 24px/1 "Segoe UI", sans-serif;
+  background:
+    linear-gradient(var(--garden-v2-pink), var(--garden-v2-pink)) center / 14px 2px no-repeat,
+    linear-gradient(var(--garden-v2-pink), var(--garden-v2-pink)) center / 2px 14px no-repeat,
+    rgba(255,253,243,.90);
   box-shadow: 0 2px 7px rgba(168,75,85,.10);
 }
 

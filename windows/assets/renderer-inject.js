@@ -303,7 +303,7 @@
   const observer = new MutationObserver(scheduleEnsure);
   observer.observe(document.documentElement, { childList: true, subtree: true });
   const timer = setInterval(ensure, 5000);
-  window[STATE_KEY] = { ensure, cleanup, dismissHome, observer, timer, scheduler, homeClickAbort, artUrl, themeId: theme.id, version: "1.8.3" };
+  window[STATE_KEY] = { ensure, cleanup, dismissHome, observer, timer, scheduler, homeClickAbort, artUrl, themeId: theme.id, version: "1.8.4" };
   ensure();
-  return { installed: true, version: "1.8.3", themeId: theme.id };
+  return { installed: true, version: "1.8.4", themeId: theme.id };
 })(__DREAM_CSS_JSON__, __DREAM_ART_JSON__, __DREAM_THEME_JSON__)
