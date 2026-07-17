@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "bundled-dream",
+  "name": "Dream Skin",
+  "brandTitle": "薛凯琪专属定制皮肤",
+  "brandSubtitle": "Codex App 限定版 ✦",
+  "tagline": "与凯琪一起，把灵感写进每一天 ♡",
+  "signature": "Fiona Sit ♡",
+  "projectPrefix": "选择项目 · ",
+  "projectLabel": "♡  选择项目",
+  "image": "dream-reference.png",
+  "design": {
+    "mode": "default",
+    "textSide": "left",
+    "decoration": "soft",
+    "focalX": 0.72,
+    "focalY": 0.5,
+    "heroHeight": 252,
+    "cornerRadius": 26,
+    "cardRadius": 23,
+    "decorationDensity": 0.62,
+    "overlayStrength": 0.76,
+    "showPolaroid": true
+  },
+  "colors": {
+    "ink": "#4c2364",
+    "purple": "#8b3dce",
+    "violet": "#b45cff",
+    "pink": "#ff73bd",
+    "blush": "#fff3f9"
+  }
+}

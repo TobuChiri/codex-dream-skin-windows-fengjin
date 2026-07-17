@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, "..");
-const SKIN_VERSION = "1.0.0";
+const SKIN_VERSION = "1.8.0";
 const LOOPBACK_HOSTS = new Set(["127.0.0.1", "localhost", "[::1]", "::1"]);
 const BROWSER_ID_PATTERN = /^[A-Za-z0-9._-]{1,200}$/;
 
@@ -18,6 +18,7 @@ function parseArgs(argv) {
     screenshot: null,
     reload: false,
     browserId: null,
+    themeDir: null,
   };
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
@@ -28,6 +29,7 @@ function parseArgs(argv) {
     else if (arg === "--remove") options.mode = "remove";
     else if (arg === "--timeout-ms") options.timeoutMs = Number(argv[++i]);
     else if (arg === "--browser-id") options.browserId = argv[++i];
+    else if (arg === "--theme-dir") options.themeDir = path.resolve(argv[++i]);
     else if (arg === "--screenshot") options.screenshot = path.resolve(argv[++i]);
     else if (arg === "--reload") options.reload = true;
     else if (arg === "--self-test") options.mode = "self-test";
@@ -266,16 +268,122 @@ async function connectBrowserIdentityAnchor(port, expectedBrowserId) {
   return new BrowserIdentityAnchor(validatedDebuggerUrl(version, port)).open();
 }
 
-async function loadPayload() {
-  const [css, template, art] = await Promise.all([
+function themeText(value, fallback, maximum = 120) {
+  if (typeof value !== "string") return fallback;
+  const text = value.trim();
+  if (!text || text.length > maximum || /[\u0000-\u001f\u007f]/.test(text)) return fallback;
+  return text;
+}
+
+function themeColor(value, fallback) {
+  return typeof value === "string" && /^#[0-9a-f]{6}$/i.test(value) ? value : fallback;
+}
+
+function themeNumber(value, minimum, maximum, fallback) {
+  return typeof value === "number" && Number.isFinite(value) && value >= minimum && value <= maximum
+    ? value
+    : fallback;
+}
+
+function themeChoice(value, allowed, fallback) {
+  return typeof value === "string" && allowed.includes(value) ? value : fallback;
+}
+
+async function loadTheme(themeDirectory) {
+  const directory = path.resolve(themeDirectory ?? path.join(root, "assets"));
+  const realDirectory = await fs.realpath(directory);
+  const manifest = JSON.parse(await fs.readFile(path.join(realDirectory, "theme.json"), "utf8"));
+  if (!manifest || Array.isArray(manifest) || manifest.schemaVersion !== 1) {
+    throw new Error("Theme manifest must use schemaVersion 1");
+  }
+  const id = themeText(manifest.id, "", 64);
+  if (!/^[a-z0-9][a-z0-9._-]{0,63}$/.test(id)) throw new Error("Theme ID is invalid");
+  if (typeof manifest.image !== "string" || path.basename(manifest.image) !== manifest.image) {
+    throw new Error("Theme image must be a file name inside the theme directory");
+  }
+  const extension = path.extname(manifest.image).toLowerCase();
+  const mimeTypes = new Map([
+    [".png", "image/png"],
+    [".jpg", "image/jpeg"],
+    [".jpeg", "image/jpeg"],
+    [".webp", "image/webp"],
+  ]);
+  const mime = mimeTypes.get(extension);
+  if (!mime) throw new Error(`Unsupported theme image type: ${extension}`);
+  const imagePath = await fs.realpath(path.join(realDirectory, manifest.image));
+  const relativeImage = path.relative(realDirectory, imagePath);
+  if (!relativeImage || relativeImage.startsWith("..") || path.isAbsolute(relativeImage)) {
+    throw new Error("Theme image resolved outside the theme directory");
+  }
+  const imageStat = await fs.stat(imagePath);
+  if (!imageStat.isFile() || imageStat.size < 1 || imageStat.size > 50 * 1024 * 1024) {
+    throw new Error("Theme image must be a file between 1 byte and 50 MB");
+  }
+  const colors = manifest.colors ?? {};
+  const design = manifest.design ?? {};
+  const motifs = manifest.motifs ?? {};
+  return {
+    data: {
+      schemaVersion: 1,
+      id,
+      name: themeText(manifest.name, "Dream Skin"),
+      brandTitle: themeText(manifest.brandTitle, "Codex Dream Skin"),
+      brandSubtitle: themeText(manifest.brandSubtitle, "CODEX APP ✦"),
+      heroTitle: themeText(manifest.heroTitle, "我们该构建什么？", 48),
+      tagline: themeText(manifest.tagline, "Make something wonderful"),
+      signature: themeText(manifest.signature, "Dream Skin ♡"),
+      projectPrefix: themeText(manifest.projectPrefix, "选择项目 · ", 40),
+      projectLabel: themeText(manifest.projectLabel, "♡  选择项目", 40),
+      colors: {
+        ink: themeColor(colors.ink, "#4c2364"),
+        purple: themeColor(colors.purple, "#8b3dce"),
+        violet: themeColor(colors.violet, "#b45cff"),
+        pink: themeColor(colors.pink, "#ff73bd"),
+        blush: themeColor(colors.blush, "#fff3f9"),
+      },
+      design: {
+        mode: themeChoice(design.mode, ["auto", "default", "manual"], "default"),
+        textSide: themeChoice(design.textSide, ["left", "right"], "left"),
+        decoration: themeChoice(design.decoration, ["soft", "minimal", "geometric", "neon"], "soft"),
+        focalX: themeNumber(design.focalX, 0.0, 1.0, 0.72),
+        focalY: themeNumber(design.focalY, 0.0, 1.0, 0.5),
+        heroHeight: themeNumber(design.heroHeight, 210, 520, 252),
+        cornerRadius: themeNumber(design.cornerRadius, 8, 36, 26),
+        cardRadius: themeNumber(design.cardRadius, 8, 32, 23),
+        decorationDensity: themeNumber(design.decorationDensity, 0.0, 1.0, 0.62),
+        overlayStrength: themeNumber(design.overlayStrength, 0.35, 0.95, 0.76),
+        showPolaroid: typeof design.showPolaroid === "boolean" ? design.showPolaroid : true,
+      },
+      motifs: {
+        pattern: themeChoice(motifs.pattern, ["none", "equalizer", "circuit", "wave", "stars", "floral", "rainbow"], "none"),
+        emblem: themeChoice(motifs.emblem, ["none", "twin-tail", "wing"], "none"),
+        cornerMark: themeText(motifs.cornerMark, "", 16),
+        badge: themeText(motifs.badge, "", 40),
+        code: themeText(motifs.code, "", 48),
+        brandGlyph: themeText(motifs.brandGlyph, "♫", 4),
+        accentGlyph: themeText(motifs.accentGlyph, "♡", 4),
+        glyphs: Array.isArray(motifs.glyphs)
+          ? motifs.glyphs.slice(0, 6).map((value) => themeText(value, "", 12)).filter(Boolean)
+          : [],
+      },
+    },
+    art: await fs.readFile(imagePath),
+    mime,
+  };
+}
+
+async function loadPayload(themeDirectory = null) {
+  const [css, template, theme] = await Promise.all([
     fs.readFile(path.join(root, "assets", "dream-skin.css"), "utf8"),
     fs.readFile(path.join(root, "assets", "renderer-inject.js"), "utf8"),
-    fs.readFile(path.join(root, "assets", "dream-reference.png")),
+    loadTheme(themeDirectory),
   ]);
-  const artDataUrl = `data:image/png;base64,${art.toString("base64")}`;
+  const colorCss = `\n:root.codex-dream-skin { --dream-ink: ${theme.data.colors.ink}; --dream-purple: ${theme.data.colors.purple}; --dream-violet: ${theme.data.colors.violet}; --dream-pink: ${theme.data.colors.pink}; --dream-blush: ${theme.data.colors.blush}; }\n`;
+  const artDataUrl = `data:${theme.mime};base64,${theme.art.toString("base64")}`;
   return template
-    .replace("__DREAM_CSS_JSON__", JSON.stringify(css))
-    .replace("__DREAM_ART_JSON__", JSON.stringify(artDataUrl));
+    .replace("__DREAM_CSS_JSON__", JSON.stringify(css + colorCss))
+    .replace("__DREAM_ART_JSON__", JSON.stringify(artDataUrl))
+    .replace("__DREAM_THEME_JSON__", JSON.stringify(theme.data));
 }
 
 async function probeSession(session) {
@@ -437,7 +545,7 @@ async function capture(session, outputPath) {
 
 async function runOneShot(options) {
   const connected = await connectCodexTargets(options.port, options.timeoutMs);
-  const payload = (options.mode === "once" || options.reload) ? await loadPayload() : null;
+  const payload = (options.mode === "once" || options.reload) ? await loadPayload(options.themeDir) : null;
   const results = [];
   let screenshotCaptured = false;
   try {
@@ -499,7 +607,7 @@ async function runWatch(options) {
   process.on("SIGTERM", stop);
 
   try {
-    const payload = await loadPayload();
+    const payload = await loadPayload(options.themeDir);
     while (!stopping) {
       if (identityAnchor.closed) {
         console.error("[dream-skin] original CDP browser identity closed; watcher is stopping instead of reconnecting");
@@ -622,8 +730,9 @@ if (options.mode === "self-test") {
   }
   console.log(JSON.stringify({ pass: true, version: SKIN_VERSION, test: "loopback-cdp-validation" }));
 } else if (options.mode === "check-payload") {
-  const payload = await loadPayload();
-  if (payload.includes("__DREAM_CSS_JSON__") || payload.includes("__DREAM_ART_JSON__")) {
+  const payload = await loadPayload(options.themeDir);
+  if (payload.includes("__DREAM_CSS_JSON__") || payload.includes("__DREAM_ART_JSON__") ||
+      payload.includes("__DREAM_THEME_JSON__")) {
     throw new Error("Payload placeholders were not fully replaced");
   }
   console.log(JSON.stringify({ pass: true, version: SKIN_VERSION, payloadBytes: Buffer.byteLength(payload) }));

@@ -2,8 +2,35 @@
 
 ## Unreleased
 
+### 1.8.0 · 预览图高还原
+
+- 新增独立的 `hyacine-fengjin-magic-garden-v2` 设计入口；旧风堇主题 ID 和安装包保持不变。
+- 桌面横幅允许使用最高 520 px 的受校验高度，使原生建议卡可以像参考图一样嵌入横幅下缘。
+- 主题清单新增可选首页标题，渲染层新增侧栏导航分类与四枚主题专用 SVG 图标。
+- 参考图视觉只用于横幅与拍立得裁切；侧栏、建议卡、项目选择、输入框及顶部按钮仍为真实 Codex 控件。
+
+### Features
+
+- Added a Windows user-theme library under `%LOCALAPPDATA%\CodexDreamSkin\themes`, with image-picker customization, theme listing, active selection, and live switching back to the bundled theme.
+- Theme manifests can customize the hero image, brand text, tagline, project labels, and five primary theme colors. PNG, JPEG, and WebP images up to 50 MB are supported.
+- New themes automatically extract a palette from PNG/JPEG images and apply it across the sidebar, shell background, header, cards, composer, controls, task messages, decorations, borders, shadows, and scrollbars. Explicit color arguments remain available for manual art direction.
+- Image analysis now generates a deterministic `design` block for the whole composition: focal-point crop, left/right text placement, responsive hero height, corner/card geometry, overlay strength, decoration density, polaroid visibility, and one of four decoration systems (`soft`, `minimal`, `geometric`, or `neon`).
+- Theme manifests can now add a semantic `motifs` layer with equalizer, circuit, or waveform patterns; a twin-tail emblem; a corner mark; compact HUD labels; and up to six decorative glyphs. Motifs are CSS geometry and remain non-interactive.
+- Added floral and rainbow motif patterns plus a wing emblem for character themes built around flowers, sky, healing, or fantasy imagery.
+- Motif manifests can now set independent `brandGlyph` and `accentGlyph` values, so character themes no longer inherit the bundled music note and heart treatment.
+- Renderer roots now expose the active theme ID through `data-dream-theme`, allowing reference-led theme variants to remain fully isolated from their original skin.
+- Added the independent `hyacine-fengjin-magic-garden` design system: cream-and-coral shell, gold floral framing, overlapping suggestion cards, per-card subtitles, exclusive badge, rainbow/wing ornamentation, and character polaroid.
+- The installer now creates a **Codex Dream Skin - Customize** shortcut.
+
+### Compatibility
+
+- Fixed atomic UTF-8 replacement on Windows PowerShell 5.1 by using a same-directory temporary backup path.
+- Fixed CRLF multiline-array detection so ambiguous TOML remains unchanged.
+
 ### 修复
 
+- 首页建议卡除了固定图标行和徽章尺寸，还会测量每个 SVG 内实际绘制路径的屏幕包围盒，并自动补偿水平与垂直偏移；不再把偏心的 `viewBox` 误当作视觉中心。
+- 侧栏与主内容区的内部拼接边统一为直角；横幅、建议卡、项目栏和输入框继续使用同一主题半径变量，消除相邻框架一边圆、一边直的断裂感。
 - 渲染层现在只在检测到完整 Codex 主界面壳层时启用皮肤；宠物等透明辅助窗口会主动清理主题背景与装饰节点，避免出现遮挡宠物的矩形背景框。
 - 安装与 `-RestoreBaseTheme` 现在严格按 UTF-8 读取，保留原换行风格，并以无 BOM、同目录原子替换方式写回 `config.toml`，避免中文项目名称乱码或导致 Codex 无法启动。
 - 遇到带 BOM/无 BOM 的 UTF-16、NUL 字符、无效 UTF-8 或写入期间被其他程序改动的配置时停止修改，不再静默转码或覆盖较新的内容。

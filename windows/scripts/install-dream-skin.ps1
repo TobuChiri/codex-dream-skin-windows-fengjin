@@ -43,6 +43,7 @@ try {
     $startMenu = Join-Path $env:APPDATA 'Microsoft\Windows\Start Menu\Programs'
     $powershell = (Get-Command powershell.exe -ErrorAction Stop).Source
     $startScript = Join-Path $PSScriptRoot 'start-dream-skin.ps1'
+    $customizeScript = Join-Path $PSScriptRoot 'customize-theme-windows.ps1'
     $restoreScript = Join-Path $PSScriptRoot 'restore-dream-skin.ps1'
     $portArgument = if ($PortExplicit) { " -Port $Port" } else { '' }
 
@@ -53,6 +54,13 @@ try {
       $shortcut.WorkingDirectory = $SkillRoot
       $shortcut.Description = 'Launch the official Codex app with Codex Dream Skin'
       $shortcut.Save()
+
+      $customize = $shell.CreateShortcut((Join-Path $folder 'Codex Dream Skin - Customize.lnk'))
+      $customize.TargetPath = $powershell
+      $customize.Arguments = "-NoProfile -ExecutionPolicy Bypass -File `"$customizeScript`""
+      $customize.WorkingDirectory = $SkillRoot
+      $customize.Description = 'Create and apply a Codex Dream Skin theme from an image'
+      $customize.Save()
     }
 
     $restore = $shell.CreateShortcut((Join-Path $desktop 'Codex Dream Skin - Restore.lnk'))
@@ -66,7 +74,7 @@ try {
   if ($NoShortcuts) {
     Write-Host 'Codex Dream Skin base theme installed. Run start-dream-skin.ps1 to launch it.'
   } else {
-    Write-Host 'Codex Dream Skin installed. The launch shortcut asks before restarting an open Codex window.'
+    Write-Host 'Codex Dream Skin installed. Use the Customize shortcut to create a theme from an image.'
   }
 } finally {
   Exit-DreamSkinOperationLock -Mutex $operationLock

@@ -4,11 +4,14 @@ param()
 $ErrorActionPreference = 'Stop'
 $Root = Split-Path -Parent $PSScriptRoot
 . (Join-Path $Root 'scripts\common-windows.ps1')
+. (Join-Path $Root 'scripts\theme-windows.ps1')
 
 $temporaryRoot = Join-Path ([System.IO.Path]::GetTempPath()) "codex-dream-skin-tests-$PID-$([guid]::NewGuid().ToString('N'))"
 New-Item -ItemType Directory -Path $temporaryRoot | Out-Null
+$originalLocalAppData = $env:LOCALAPPDATA
 
 try {
+  $env:LOCALAPPDATA = Join-Path $temporaryRoot 'LocalAppData'
   $configPath = Join-Path $temporaryRoot 'config.toml'
   $backupPath = Join-Path $temporaryRoot 'config.before-dream-skin.toml'
   $projectName = -join @([char]0x4EE3, [char]0x7801, [char]0x9879, [char]0x76EE, [char]0x7532)
@@ -309,15 +312,96 @@ try {
     throw 'Stale state was not preserved under an archive name.'
   }
 
+  $bundledTheme = Get-DreamSkinBundledTheme -WindowsRoot $Root
+  if ($bundledTheme.Id -cne 'bundled-dream') { throw 'Bundled theme manifest validation failed.' }
+  $palette = Get-DreamSkinImagePalette -ImagePath (Join-Path $Root 'assets\dream-reference.png')
+  foreach ($value in @($palette.Ink, $palette.Purple, $palette.Violet, $palette.Pink, $palette.Blush)) {
+    if ($value -notmatch '^#[0-9A-F]{6}$') { throw 'Automatic image palette returned an invalid color.' }
+  }
+  $dynamicCss = Read-DreamSkinUtf8File -Path (Join-Path $Root 'assets\dream-skin.css')
+  foreach ($marker in @(
+    '--dream-surface', '--dream-panel', '--dream-accent', 'composer-surface-chrome',
+    'app-shell-left-panel', '[data-dream-motif="floral"]', '[data-dream-emblem="wing"]',
+    '.group\/home-suggestions button > span:first-child'
+  )) {
+    if (-not $dynamicCss.Contains($marker)) { throw "Full-shell dynamic CSS is missing marker: $marker" }
+  }
+
+  $customThemeDirectory = Join-Path (Get-DreamSkinThemesRoot) 'test-theme'
+  New-Item -ItemType Directory -Path $customThemeDirectory -Force | Out-Null
+  [System.IO.File]::WriteAllBytes((Join-Path $customThemeDirectory 'background.png'), [byte[]](0x89, 0x50, 0x4e, 0x47))
+  $customThemeJson = @'
+{
+  "schemaVersion": 1,
+  "id": "test-theme",
+  "name": "测试主题",
+  "brandTitle": "Test",
+  "brandSubtitle": "Windows",
+  "tagline": "Theme test",
+  "signature": "Dream",
+  "projectPrefix": "Project · ",
+  "projectLabel": "Choose project",
+  "image": "background.png",
+  "motifs": {
+    "pattern": "floral",
+    "emblem": "wing",
+    "cornerMark": "01",
+    "badge": "VIRTUAL SINGER",
+    "code": "MELODY // LYRICS",
+    "brandGlyph": "*",
+    "accentGlyph": "+",
+    "glyphs": ["01", "MIKU", "MUSIC"]
+  },
+  "colors": {
+    "ink": "#112233",
+    "purple": "#223344",
+    "violet": "#334455",
+    "pink": "#445566",
+    "blush": "#556677"
+  }
+}
+'@
+  Write-DreamSkinUtf8FileAtomically -Path (Join-Path $customThemeDirectory 'theme.json') -Content $customThemeJson
+  $validatedTheme = Read-DreamSkinThemeManifest -ThemeDirectory $customThemeDirectory
+  if ($validatedTheme.Id -cne 'test-theme') { throw 'Custom Windows theme validation failed.' }
+  if ("$($validatedTheme.Theme.motifs.pattern)" -cne 'floral' -or
+    "$($validatedTheme.Theme.motifs.emblem)" -cne 'wing' -or
+    "$($validatedTheme.Theme.motifs.brandGlyph)" -cne '*') {
+    throw 'Semantic theme motif validation failed.'
+  }
+  Set-DreamSkinActiveTheme -Id 'test-theme'
+  $activeTheme = Resolve-DreamSkinActiveTheme -WindowsRoot $Root
+  if ($activeTheme.Id -cne 'test-theme') { throw 'Active Windows theme selection failed.' }
+
+  & (Join-Path $Root 'scripts\customize-theme-windows.ps1') `
+    -ImagePath (Join-Path $Root 'assets\dream-reference.png') -Id 'smoke-theme' `
+    -Name 'Smoke Theme' -NoApply
+  & (Join-Path $Root 'scripts\switch-theme-windows.ps1') -Id 'smoke-theme' -NoApply
+  $smokeTheme = Resolve-DreamSkinActiveTheme -WindowsRoot $Root
+  if ($smokeTheme.Id -cne 'smoke-theme') { throw 'Theme switch did not update the active selection.' }
+  if ("$($smokeTheme.Theme.paletteMode)" -cne 'auto') { throw 'Image customization did not record an automatic palette.' }
+  if ("$($smokeTheme.Theme.design.mode)" -cne 'auto' -or
+    "$($smokeTheme.Theme.design.textSide)" -notin @('left', 'right') -or
+    "$($smokeTheme.Theme.design.decoration)" -notin @('soft', 'minimal', 'geometric', 'neon')) {
+    throw 'Image customization did not record a valid automatic design configuration.'
+  }
+  $themeList = (& (Join-Path $Root 'scripts\switch-theme-windows.ps1') -List | Out-String)
+  if ($themeList -notmatch 'smoke-theme' -or $themeList -notmatch 'bundled-dream') {
+    throw 'Theme list did not include both user and bundled themes.'
+  }
+
   $node = Get-DreamSkinNodeRuntime
   & $node.Path (Join-Path $Root 'scripts\injector.mjs') --self-test *> $null
   if ($LASTEXITCODE -ne 0) { throw 'Injector CDP self-test failed.' }
   & $node.Path (Join-Path $Root 'scripts\injector.mjs') --check-payload *> $null
   if ($LASTEXITCODE -ne 0) { throw 'Injector self-test failed.' }
+  & $node.Path (Join-Path $Root 'scripts\injector.mjs') --check-payload --theme-dir $customThemeDirectory *> $null
+  if ($LASTEXITCODE -ne 0) { throw 'Custom theme payload self-test failed.' }
   & $node.Path (Join-Path $PSScriptRoot 'renderer-inject.test.mjs')
   if ($LASTEXITCODE -ne 0) { throw 'Renderer auxiliary-window regression test failed.' }
 
   Write-Host 'PASS: config transactions, restore scoping, state safety, argument quoting, and loopback CDP validation.'
 } finally {
+  $env:LOCALAPPDATA = $originalLocalAppData
   Remove-Item -LiteralPath $temporaryRoot -Recurse -Force -ErrorAction SilentlyContinue
 }

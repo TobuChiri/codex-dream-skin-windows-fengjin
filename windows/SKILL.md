@@ -10,10 +10,11 @@ Apply a reversible renderer skin through Chromium DevTools Protocol while launch
 ## Workflow
 
 1. Install Node.js 22 or newer, close Codex, then run `scripts/install-dream-skin.ps1` once to set the matching official base colors and create launch/restore shortcuts.
-2. Run `scripts/start-dream-skin.ps1`. The shortcut asks before restarting an already-open Codex app; CLI callers must explicitly add `-RestartExisting`.
-3. Run `scripts/verify-dream-skin.ps1 -ScreenshotPath <absolute-path>` after launch. Treat a missing hero, native composer, sidebar skin, or injection marker as failure. The native suggestion count is responsive and may be two to four.
-4. Inspect the screenshot against `references/qa-inventory.md`. Verify both the home screen and a normal task before signing off.
-5. Run `scripts/restore-dream-skin.ps1` to remove the live skin, close the saved CDP session, and reopen Codex normally. Add `-RestoreBaseTheme` to restore only saved appearance keys, `-RecoverConfigBackup` for explicit byte-for-byte recovery of a damaged config, or `-Uninstall` to delete shortcuts. A completed config restore archives that install's backup so a later install captures a fresh baseline.
+2. Optionally run `scripts/customize-theme-windows.ps1` to choose an image and create a user theme. Use `scripts/switch-theme-windows.ps1 -List` and `-Id <theme-id>` to list or switch themes; `bundled-dream` selects the original bundled theme.
+3. Run `scripts/start-dream-skin.ps1`. The shortcut asks before restarting an already-open Codex app; CLI callers must explicitly add `-RestartExisting`.
+4. Run `scripts/verify-dream-skin.ps1 -ScreenshotPath <absolute-path>` after launch. Treat a missing hero, native composer, sidebar skin, or injection marker as failure. The native suggestion count is responsive and may be two to four.
+5. Inspect the screenshot against `references/qa-inventory.md`. Verify both the home screen and a normal task before signing off.
+6. Run `scripts/restore-dream-skin.ps1` to remove the live skin, close the saved CDP session, and reopen Codex normally. Add `-RestoreBaseTheme` to restore only saved appearance keys, `-RecoverConfigBackup` for explicit byte-for-byte recovery of a damaged config, or `-Uninstall` to delete shortcuts. A completed config restore archives that install's backup so a later install captures a fresh baseline.
 
 ## Guardrails
 
@@ -25,6 +26,7 @@ Apply a reversible renderer skin through Chromium DevTools Protocol while launch
 - On app updates, rerun install and launch; the scripts discover the current Appx package dynamically. Saved paths are never trusted for process control unless they still match a registered package identity.
 - The default launcher scans for a free port when `9335` is occupied. An explicitly requested occupied port fails closed.
 - Keep the injection daemon running for navigation/reload resilience. Its state and logs live under `%LOCALAPPDATA%\CodexDreamSkin`.
+- Keep user themes under `%LOCALAPPDATA%\CodexDreamSkin\themes`; validate theme IDs, image containment, file type, size, text fields, and colors before injection.
 - CDP targets must use a same-port loopback WebSocket, belong to the current Store package, retain the launch-time Browser ID, and expose expected Codex renderer markers.
 - Loopback prevents LAN exposure, but Chromium CDP has no same-user authentication. Run only trusted local software while the skin is active, and use restore to close the debug session when it is no longer needed.
 - Preserve `config.toml` as strict UTF-8. Never use encoding-dependent whole-file PowerShell reads/writes, silently transcode UTF-16, or overwrite a file that changed after it was read. Ambiguous TOML shapes must fail before writing rather than receive a best-effort rewrite.
@@ -43,6 +45,9 @@ node --check assets\renderer-inject.js
 - `scripts/injector.mjs`: CDP connection, renderer injection, verification, screenshot, and removal.
 - `scripts/common-windows.ps1`: Store-package discovery, Node validation, port ownership, state, and process identity safety.
 - `scripts/config-utf8.ps1`: atomic UTF-8 configuration backup, selective restore, and explicit recovery.
+- `scripts/theme-windows.ps1`: theme-library validation, active selection, and bundled-theme resolution.
+- `scripts/customize-theme-windows.ps1`: image picker and custom-theme creation.
+- `scripts/switch-theme-windows.ps1`: theme listing, selection, and live reapply.
 - `assets/dream-skin.css`: full visual layer.
 - `assets/renderer-inject.js`: idempotent DOM integration and cleanup.
 - `assets/dream-reference.png`: user-provided visual reference used only in cropped decorative regions.

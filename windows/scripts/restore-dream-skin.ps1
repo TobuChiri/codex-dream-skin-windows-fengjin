@@ -132,8 +132,10 @@ try {
       $startMenu = Join-Path $env:APPDATA 'Microsoft\Windows\Start Menu\Programs'
       @(
         (Join-Path $desktop 'Codex Dream Skin.lnk'),
+        (Join-Path $desktop 'Codex Dream Skin - Customize.lnk'),
         (Join-Path $desktop 'Codex Dream Skin - Restore.lnk'),
-        (Join-Path $startMenu 'Codex Dream Skin.lnk')
+        (Join-Path $startMenu 'Codex Dream Skin.lnk'),
+        (Join-Path $startMenu 'Codex Dream Skin - Customize.lnk')
       ) | ForEach-Object { Remove-Item -LiteralPath $_ -Force -ErrorAction SilentlyContinue }
     }
 

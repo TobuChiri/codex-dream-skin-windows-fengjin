@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "id": "hyacine-fengjin-magic-garden-v2",
+  "name": "风堇 · 魔法花园（预览图高还原版）",
+  "brandTitle": "风堇主题 Codex App ♫",
+  "brandSubtitle": "你的专属 AI 编程与创作伙伴 ♡",
+  "heroTitle": "今天想一起构建什么？ ✧",
+  "tagline": "用代码编织灵感，让创意绽放无限可能 ✧",
+  "signature": "Fengjin ♡",
+  "projectPrefix": "选择项目 · ",
+  "projectLabel": "▰  选择项目⌄",
+  "image": "fengjin-preview-source.png",
+  "paletteMode": "reference-locked",
+  "design": {
+    "mode": "manual",
+    "textSide": "left",
+    "decoration": "soft",
+    "focalX": 0.56,
+    "focalY": 0.48,
+    "heroHeight": 430,
+    "cornerRadius": 28,
+    "cardRadius": 22,
+    "decorationDensity": 0.92,
+    "overlayStrength": 0.35,
+    "showPolaroid": true
+  },
+  "motifs": {
+    "pattern": "floral",
+    "emblem": "wing",
+    "cornerMark": "♡",
+    "badge": "风堇专属 · EXCLUSIVE",
+    "code": "FENGJIN_0701 ♡",
+    "brandGlyph": "✿",
+    "accentGlyph": "✦",
+    "glyphs": [
+      "FENGJIN",
+      "GARDEN",
+      "PETALS",
+      "WINGS",
+      "ICA",
+      "RAINBOW"
+    ]
+  },
+  "colors": {
+    "ink": "#75454A",
+    "purple": "#A84D58",
+    "violet": "#67C9BB",
+    "pink": "#F184A5",
+    "blush": "#FFF8EE"
+  }
+}

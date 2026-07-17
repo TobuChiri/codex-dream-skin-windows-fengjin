@@ -10,13 +10,16 @@ param(
 $ErrorActionPreference = 'Stop'
 $PortExplicit = $PSBoundParameters.ContainsKey('Port')
 $Injector = Join-Path $PSScriptRoot 'injector.mjs'
+$WindowsRoot = Split-Path -Parent $PSScriptRoot
 . (Join-Path $PSScriptRoot 'common-windows.ps1')
+. (Join-Path $PSScriptRoot 'theme-windows.ps1')
 
 $operationLock = Enter-DreamSkinOperationLock
 try {
   Assert-DreamSkinPort -Port $Port
   if ($ProfilePath) { $ProfilePath = [System.IO.Path]::GetFullPath($ProfilePath) }
   $node = Get-DreamSkinNodeRuntime
+  $activeTheme = Resolve-DreamSkinActiveTheme -WindowsRoot $WindowsRoot
   $currentCodex = Get-DreamSkinCodexInstall
   $codex = $currentCodex
   $StateRoot = Join-Path $env:LOCALAPPDATA 'CodexDreamSkin'
@@ -162,7 +165,8 @@ try {
     Remove-Item -LiteralPath $StatePath -Force -ErrorAction SilentlyContinue
     Exit-DreamSkinOperationLock -Mutex $operationLock
     $operationLock = $null
-    & $node.Path $Injector --watch --port $Port --browser-id $cdpIdentity.BrowserId
+    & $node.Path $Injector --watch --port $Port --browser-id $cdpIdentity.BrowserId `
+      --theme-dir $activeTheme.Directory
     exit $LASTEXITCODE
   }
 
@@ -170,7 +174,8 @@ try {
   $daemon = $null
   try {
     $injectorArgs = @((ConvertTo-DreamSkinProcessArgument -Value $Injector), '--watch', '--port', "$Port",
-      '--browser-id', $cdpIdentity.BrowserId)
+      '--browser-id', $cdpIdentity.BrowserId, '--theme-dir',
+      (ConvertTo-DreamSkinProcessArgument -Value $activeTheme.Directory))
     $daemon = Start-Process -FilePath $node.Path -ArgumentList $injectorArgs -WindowStyle Hidden -PassThru `
       -RedirectStandardOutput $StdoutPath -RedirectStandardError $StderrPath
     Start-Sleep -Milliseconds 500
@@ -194,6 +199,9 @@ try {
       codexVersion = $codex.Version
       browserId = $cdpIdentity.BrowserId
       profilePath = $ProfilePath
+      themeId = $activeTheme.Id
+      themeName = $activeTheme.Name
+      themeDirectory = $activeTheme.Directory
       createdAt = (Get-Date).ToUniversalTime().ToString('o')
     }
     Write-DreamSkinState -Path $StatePath -State $state
@@ -247,7 +255,7 @@ try {
     throw $startupError
   }
 
-  Write-Host "Codex Dream Skin is active on verified loopback port $Port."
+  Write-Host "Codex Dream Skin '$($activeTheme.Name)' is active on verified loopback port $Port."
 } finally {
   if ($null -ne $operationLock) { Exit-DreamSkinOperationLock -Mutex $operationLock }
 }

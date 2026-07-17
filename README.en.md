@@ -1,131 +1,101 @@
-# Codex Dream Skin
+# Codex Dream Skin · Fengjin Windows Edition
+
+> A reversible external theme layer for the official Microsoft Store OpenAI Codex desktop app on Windows. It injects CSS through loopback CDP and never modifies WindowsApps, `app.asar`, binaries, or signatures.
+
+[中文](./README.md) · [Windows guide](./windows/README.md) · [Upstream attribution](./UPSTREAM.md) · [MIT License](./LICENSE)
+
+## Fengjin · Magic Garden V2
 
 <p align="center">
-  <a href="./README.md">中文</a> · <strong>English</strong>
+  <img src="./windows/theme-packs/hyacine-fengjin-magic-garden-v2/fengjin-preview-source.png" alt="Fengjin Magic Garden V2 preview" width="900">
 </p>
 
-<p align="center">
-  <strong>Give Codex a face that breathes.</strong><br>
-  External themes for the Codex desktop app · Local CDP inject · No official package mutation
-</p>
-
-<p align="center">
-  One image, one mood · Code with atmosphere
-</p>
-
-<p align="center">
-  Unofficial. Does not modify <code>.app</code> / <code>app.asar</code> / WindowsApps.
-</p>
-
-## Sponsors
-
-<p align="center">
-  <a href="https://passion8.cc/register?aff=TuPe">
-    <img src="docs/images/sponsor-passion8.png" alt="Passion8" height="72">
-  </a>
-</p>
-
-<p align="center">
-  <strong>Smarter Connections · Passionate Creation</strong><br>
-  <sub>Connect AI · Power Creation</sub>
-</p>
-
-<p align="center">
-  Thanks to <a href="https://passion8.cc/register?aff=TuPe"><strong>passion8.cc</strong></a> for sponsoring this project.<br>
-  Full-power AI gateway: official models, no silent downgrades, no wrapper shells.<br>
-  One-line setup for Codex / Claude Code / Grok.
-</p>
-
-<p align="center">
-  <sub>
-    Theme install and API config stay separate — this project never rewrites your provider settings.
-  </sub>
-</p>
-
-## Gallery
-
-One image, one mood. Real theme previews you can ship:
-
-<p align="center">
-  <img src="docs/images/gallery/skin-01.jpg" alt="Pink Custom" width="900"><br>
-  <sub>Pink Custom</sub>
-</p>
-
-<p align="center">
-  <img src="docs/images/gallery/skin-02.jpg" alt="God of Wealth" width="900"><br>
-  <sub>God of Wealth</sub>
-</p>
-
-<p align="center">
-  <img src="docs/images/gallery/skin-03.jpg" alt="Red-White Sci-Fi" width="900"><br>
-  <sub>Red-White Sci-Fi</sub>
-</p>
-
-<p align="center">
-  <img src="docs/images/gallery/skin-04.jpg" alt="Clear Custom" width="900"><br>
-  <sub>Clear Custom</sub>
-</p>
-
-<p align="center">
-  <img src="docs/images/gallery/skin-05.jpg" alt="Inspiration" width="900"><br>
-  <sub>Inspiration</sub>
-</p>
-
-<p align="center">
-  <img src="docs/images/gallery/skin-06.jpg" alt="Purple Night" width="900"><br>
-  <sub>Purple Night</sub>
-</p>
-
-<p align="center">
-  <img src="docs/images/gallery/skin-07.jpg" alt="Hatsune Miku" width="900"><br>
-  <sub>Hatsune Miku</sub>
-</p>
-
-<p align="center">
-  <img src="docs/images/gallery/skin-08.jpg" alt="Stage Black-Gold" width="900"><br>
-  <sub>Stage Black-Gold</sub>
-</p>
-
-## What it does
-
-- **Real UI** — Sidebar, cards, project picker, and input stay native. Not a fake full-window screenshot.
-- **Swappable art** — Drop in an image you like and it becomes your theme.
-- **Restorable** — One-click restore to the stock look.
-- **Safer path** — Local-loopback CDP inject only. No official binary or signature changes.
+V2 rebuilds the supplied layout with a character-led hero, garden badge, four overlapping action cards, coloured SVG icons, branded sidebar, petal trail, project bar, composer, and polaroid. The sidebar, cards, project picker, and composer remain real Codex controls rather than a whole-window image overlay.
 
 ## Quick start
 
-Platform scripts are ready — different plumbing, same goal: theme Codex.
+### Requirements
 
-| Platform | Dir | Entry |
-|------|------|------|
-| Apple Silicon / Intel Mac | [`macos/`](./macos/) | Double-click `Install Codex Dream Skin.command` |
-| Windows | [`windows/`](./windows/) | `scripts/install-dream-skin.ps1` → `start-dream-skin.ps1` |
+- Windows 10 or 11
+- Official Microsoft Store `OpenAI.Codex`
+- Node.js 22 or newer
+- PowerShell 5.1 or newer
 
-More detail:
+### Install the engine
 
-- Mac: [`macos/README.md`](./macos/README.md)
-- Windows: [`windows/SKILL.md`](./windows/SKILL.md)
-- Paths: [`docs/platforms.md`](./docs/platforms.md)
-- Project notes: [`docs/PROJECT.md`](./docs/PROJECT.md)
+Close Codex, open PowerShell, and run from this checkout:
 
-## Feedback & contributions
+```powershell
+cd .\windows
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\install-dream-skin.ps1
+```
 
-- **Issues:** Use the [issue templates](./.github/ISSUE_TEMPLATE/) (bug / feature). Blank issues are disabled. Please try Verify / Restore self-checks before filing bugs.
-- **PRs:** Follow the [PR template](./.github/pull_request_template.md) — describe the change and tick the self-checks you actually ran (e.g. `macos/tests/run-tests.sh`, verify / restore).
+The installer adds launch, customize, and restore shortcuts.
+
+### Install and enable Fengjin V2
+
+```powershell
+$theme = ".\theme-packs\hyacine-fengjin-magic-garden-v2"
+$target = Join-Path $env:LOCALAPPDATA "CodexDreamSkin\themes\hyacine-fengjin-magic-garden-v2"
+New-Item -ItemType Directory -Force -Path (Split-Path $target) | Out-Null
+Copy-Item -LiteralPath $theme -Destination $target -Recurse -Force
+.\scripts\switch-theme-windows.ps1 -Id hyacine-fengjin-magic-garden-v2 -PromptRestart
+```
+
+Launch Codex through the **Codex Dream Skin** desktop shortcut afterwards.
+
+## Use and customization
+
+List local themes:
+
+```powershell
+.\windows\scripts\switch-theme-windows.ps1 -List
+```
+
+Enable Fengjin V2:
+
+```powershell
+.\windows\scripts\switch-theme-windows.ps1 -Id hyacine-fengjin-magic-garden-v2 -PromptRestart
+```
+
+Create a theme from your own image:
+
+```powershell
+.\windows\scripts\customize-theme-windows.ps1 `
+  -ImagePath "C:\Pictures\background.png" `
+  -Id "my-theme" `
+  -Name "My Theme"
+```
+
+Images are copied to `%LOCALAPPDATA%\CodexDreamSkin\themes`. PNG/JPEG images receive an automatic palette and baseline layout; the generated `theme.json` remains editable for focal point, hero height, radii, decorations, and copy.
+
+Restore the stock appearance:
+
+```powershell
+.\windows\scripts\restore-dream-skin.ps1 -RestoreBaseTheme -PromptRestart
+```
+
+Restore removes the live injection and debugging session but keeps personal themes.
 
 ## Safety
 
-- CDP binds `127.0.0.1` only — avoid untrusted local processes while the theme runs.
-- Does not touch the official install directory or code signature.
-- **Never** rewrites API Key / Base URL; relay and theme stay separate.
+- CDP binds to `127.0.0.1` only. Do not run untrusted local processes while it is active.
+- No official install files, signatures, `app.asar`, API keys, or provider endpoints are modified.
+- Theme images and character artwork remain subject to their respective rights holders. Clear rights before redistribution or commercial use.
+- This is not an OpenAI product and is not endorsed by OpenAI.
+
+## Upstream attribution
+
+This public derivative is based on [Fei-Away/Codex-Dream-Skin](https://github.com/Fei-Away/Codex-Dream-Skin). Its MIT license and notices are preserved. See [UPSTREAM.md](./UPSTREAM.md) for scope and credit.
+
+## Verification
+
+```powershell
+cd .\windows
+powershell -NoProfile -ExecutionPolicy Bypass -File .\tests\run-tests.ps1
+.\scripts\verify-dream-skin.ps1 -ScreenshotPath "$env:TEMP\dream-skin.png"
+```
 
 ## License
 
-- See [`macos/LICENSE`](./macos/LICENSE) (MIT) and [`macos/NOTICE.md`](./macos/NOTICE.md)
-- Unofficial; Codex and related rights belong to their owners.
-- People / IP art in previews is illustrative only — clear rights before commercial redistribution.
-
----
-
-Star it, pick a look, and make Codex yours for today.
+Software source is [MIT licensed](./LICENSE). The theme preview artwork is not licensed under MIT; see [NOTICE.md](./NOTICE.md).

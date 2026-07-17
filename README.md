@@ -1,130 +1,101 @@
-# Codex Dream Skin
+# Codex Dream Skin · 风堇 Windows 主题版
+
+> 为官方 Microsoft Store 版 OpenAI Codex 提供可恢复的 Windows 外部主题。通过本机回环 CDP 注入 CSS，不修改 WindowsApps、`app.asar`、应用二进制或签名。
+
+[English](./README.en.md) · [Windows 使用说明](./windows/README.zh-CN.md) · [上游来源与署名](./UPSTREAM.md) · [MIT License](./LICENSE)
+
+## 风堇 · 魔法花园 V2
 
 <p align="center">
-  <strong>中文</strong> · <a href="./README.en.md">English</a>
+  <img src="./windows/theme-packs/hyacine-fengjin-magic-garden-v2/fengjin-preview-source.png" alt="风堇 · 魔法花园 V2 预览" width="900">
 </p>
 
-<p align="center">
-  <strong>给 Codex 桌面端换一张会呼吸的脸。</strong><br>
-  外部主题 / 换肤工具 · 本机 CDP 注入 · 不改官方安装包
-</p>
+V2 根据参考布局重新设计：角色主视觉、花园徽章、四张嵌入式功能卡、彩色 SVG 图标、侧栏品牌、花瓣轨迹、项目栏、输入框和拍立得保持统一的奶油粉金视觉。侧栏、建议卡、项目选择和输入框依然是 Codex 的真实控件，不是整窗截图覆盖。
 
-<p align="center">
-  一张图，一种心情 · 写代码，也要有氛围感
-</p>
+## 快速安装
 
-<p align="center">
-  非 OpenAI 官方产品。不修改 <code>.app</code> / <code>app.asar</code> / WindowsApps。
-</p>
+### 1. 准备环境
 
-## 赞助商
+- Windows 10/11
+- Microsoft Store 安装的官方 `OpenAI.Codex`
+- Node.js 22 或更高版本
+- PowerShell 5.1 或更高版本
 
-<p align="center">
-  <a href="https://passion8.cc/register?aff=TuPe">
-    <img src="docs/images/sponsor-passion8.png" alt="Passion8" height="72">
-  </a>
-</p>
+### 2. 安装换肤引擎
 
-<p align="center">
-  <strong>更智能的连接 · 更热爱的创造</strong><br>
-  <sub>热爱驱动 · 无限可能 · Connect AI · Power Creation</sub>
-</p>
+完全关闭 Codex，打开 PowerShell 并进入本仓库：
 
-<p align="center">
-  感谢 <a href="https://passion8.cc/register?aff=TuPe"><strong>passion8.cc</strong></a> 赞助本项目。<br>
-  满血 AI 中转：官方模型直连，无降智、无套壳；一行配置接入 Codex / Claude Code / Grok。
-</p>
+```powershell
+cd .\windows
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\install-dream-skin.ps1
+```
 
-<p align="center">
-  <sub>
-    换肤与 API 配置互相独立，本项目不会自动改写你的模型供应商设置。
-  </sub>
-</p>
+安装后桌面会出现启动、定制和恢复快捷方式。
 
-## 效果预览
+### 3. 安装并启用风堇 V2
 
-一张图，一种心情。下面都是可落地的主题示意效果：
+```powershell
+$theme = ".\theme-packs\hyacine-fengjin-magic-garden-v2"
+$target = Join-Path $env:LOCALAPPDATA "CodexDreamSkin\themes\hyacine-fengjin-magic-garden-v2"
+New-Item -ItemType Directory -Force -Path (Split-Path $target) | Out-Null
+Copy-Item -LiteralPath $theme -Destination $target -Recurse -Force
+.\scripts\switch-theme-windows.ps1 -Id hyacine-fengjin-magic-garden-v2 -PromptRestart
+```
 
-<p align="center">
-  <img src="docs/images/gallery/skin-01.jpg" alt="粉系定制" width="900"><br>
-  <sub>粉系定制</sub>
-</p>
+随后从 **Codex Dream Skin** 桌面快捷方式启动 Codex。
 
-<p align="center">
-  <img src="docs/images/gallery/skin-02.jpg" alt="财神打工" width="900"><br>
-  <sub>财神打工版</sub>
-</p>
+## 使用与切换
 
-<p align="center">
-  <img src="docs/images/gallery/skin-03.jpg" alt="红白科幻" width="900"><br>
-  <sub>红白科幻</sub>
-</p>
+列出本机主题：
 
-<p align="center">
-  <img src="docs/images/gallery/skin-04.jpg" alt="清透定制" width="900"><br>
-  <sub>清透定制</sub>
-</p>
+```powershell
+.\windows\scripts\switch-theme-windows.ps1 -List
+```
 
-<p align="center">
-  <img src="docs/images/gallery/skin-05.jpg" alt="灵感小宇宙" width="900"><br>
-  <sub>灵感小宇宙</sub>
-</p>
+启用风堇 V2：
 
-<p align="center">
-  <img src="docs/images/gallery/skin-06.jpg" alt="紫夜限定" width="900"><br>
-  <sub>紫夜限定</sub>
-</p>
+```powershell
+.\windows\scripts\switch-theme-windows.ps1 -Id hyacine-fengjin-magic-garden-v2 -PromptRestart
+```
 
-<p align="center">
-  <img src="docs/images/gallery/skin-07.jpg" alt="初音未来" width="900"><br>
-  <sub>初音未来</sub>
-</p>
+使用自己的图片创建主题：
 
-<p align="center">
-  <img src="docs/images/gallery/skin-08.jpg" alt="舞台黑金" width="900"><br>
-  <sub>舞台黑金</sub>
-</p>
+```powershell
+.\windows\scripts\customize-theme-windows.ps1 `
+  -ImagePath "C:\Pictures\background.png" `
+  -Id "my-theme" `
+  -Name "我的主题"
+```
 
-## 它能做什么
+创建器会将图片复制到 `%LOCALAPPDATA%\CodexDreamSkin\themes`，并为 PNG/JPEG 自动提取调色板和基础布局。`theme.json` 仍可手动调整焦点、横幅高度、圆角、装饰和主题文案。
 
-- **真·可交互**：侧栏、建议卡、项目选择、输入框都是原生控件，不是整窗假截图贴上去
-- **可换图**：换一张喜欢的图，就能变成你的主题
-- **可恢复**：一键还原官方外观
-- **相对安全**：本机回环 CDP 注入，不改官方二进制与签名
+恢复官方外观：
 
-## 快速开始
+```powershell
+.\windows\scripts\restore-dream-skin.ps1 -RestoreBaseTheme -PromptRestart
+```
 
-仓库内按平台放了现成脚本（实现细节不同，效果都是「主题化 Codex」）：
+恢复会移除注入和调试会话，但不会删除你已创建的个人主题。
 
-| 平台 | 目录 | 入口 |
-|------|------|------|
-| Apple Silicon / Intel Mac | [`macos/`](./macos/) | 双击 `Install Codex Dream Skin.command` |
-| Windows | [`windows/`](./windows/) | `scripts/install-dream-skin.ps1` → `start-dream-skin.ps1` |
+## 安全与边界
 
-更细的说明：
+- CDP 只绑定到 `127.0.0.1`；主题运行期间不要运行不可信的本机程序。
+- 不修改官方安装目录、签名、`app.asar` 或 API Key / Base URL。
+- 主题图片和角色素材的权利由各自权利人保留；公开再分发或商用前请确认授权。
+- 本项目不是 OpenAI 官方产品，也未获 OpenAI 认可或赞助。
 
-- Mac：[`macos/README.md`](./macos/README.md)
-- Windows：[`windows/SKILL.md`](./windows/SKILL.md)
-- 路径对照：[`docs/platforms.md`](./docs/platforms.md)
-- 项目记录：[`docs/PROJECT.md`](./docs/PROJECT.md)
+## 上游来源与署名
 
-## 反馈与贡献
+本仓库是基于 [Fei-Away/Codex-Dream-Skin](https://github.com/Fei-Away/Codex-Dream-Skin) 的 Windows 主题衍生项目。保留上游 MIT 许可证与原有声明；详情见 [UPSTREAM.md](./UPSTREAM.md)。感谢原仓库作者和贡献者提供基础项目。
 
-- **Issue：** 请用 [Issue 模板](./.github/ISSUE_TEMPLATE/)（Bug / 功能）；已关闭空白 Issue。提交前建议先跑 Verify / Restore 自检。
-- **PR：** 请按 [PR 模板](./.github/pull_request_template.md) 写清改动，并勾选对应自测（如 `macos/tests/run-tests.sh`、verify / restore）。
+## 验证与开发
 
-## 安全边界
+```powershell
+cd .\windows
+powershell -NoProfile -ExecutionPolicy Bypass -File .\tests\run-tests.ps1
+.\scripts\verify-dream-skin.ps1 -ScreenshotPath "$env:TEMP\dream-skin.png"
+```
 
-- CDP 只绑 `127.0.0.1`，主题运行期间勿跑来路不明的本机程序
-- 不修改官方安装目录与代码签名
-- **不会**自动改写 API Key / Base URL；中转与换肤分开
+## 许可证
 
-## 许可与声明
-
-- 见 [`macos/LICENSE`](./macos/LICENSE)（MIT）与 [`macos/NOTICE.md`](./macos/NOTICE.md)
-- 非 OpenAI 官方产品；Codex 及相关权利归其权利人
-- 效果图中的人物 / IP 形象仅作主题示意；商用或公开再分发请自行确认肖像权与商标授权
-
----
-
-Star 一下，然后挑一张图，把你的 Codex 变成今天想要的样子。
+软件源码采用 [MIT License](./LICENSE)。主题内示例图片不随 MIT 授权，详见 [NOTICE.md](./NOTICE.md)。
