@@ -1551,6 +1551,17 @@ html.codex-dream-skin[data-dream-theme="hyacine-fengjin-magic-garden-v2"] .compo
 
 html.codex-dream-skin[data-dream-theme="hyacine-fengjin-magic-garden-v2"] .ProseMirror p.placeholder::before {
   content: "随心输入，让灵感与代码一起起飞吧～ ✧" !important;
+  display: block !important;
+  color: #895f61 !important;
+  font: 400 17px/1.5 "Microsoft YaHei UI", "Segoe UI", sans-serif !important;
+  letter-spacing: .01em;
+}
+
+html.codex-dream-skin[data-dream-theme="hyacine-fengjin-magic-garden-v2"] .ProseMirror p.placeholder {
+  /* Codex keeps an accessibility text node beside its placeholder pseudo-element.
+     Hide only that duplicate while the editor is empty; real typed text is unaffected. */
+  font-size: 0 !important;
+  line-height: 0 !important;
 }
 
 html.codex-dream-skin[data-dream-theme="hyacine-fengjin-magic-garden-v2"] .composer-surface-chrome::before {

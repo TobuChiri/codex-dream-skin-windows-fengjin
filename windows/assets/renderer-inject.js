@@ -9,6 +9,7 @@
   if (previous?.observer) previous.observer.disconnect();
   if (previous?.timer) clearInterval(previous.timer);
   if (previous?.scheduler?.timeout) clearTimeout(previous.scheduler.timeout);
+  previous?.homeClickAbort?.abort?.();
   if (previous?.artUrl) URL.revokeObjectURL(previous.artUrl);
   const artUrl = (() => {
     const comma = artDataUrl.indexOf(",");
@@ -23,6 +24,22 @@
     existingStyle.textContent = cssText;
     existingStyle.dataset.dreamVersion = "1";
   }
+
+  const homeState = { dismissed: false };
+  const dismissHome = () => {
+    homeState.dismissed = true;
+    document.querySelectorAll(".dream-home").forEach((node) => node.classList.remove("dream-home"));
+    document.querySelectorAll(".dream-home-shell").forEach((node) => node.classList.remove("dream-home-shell"));
+    document.getElementById(CHROME_ID)?.classList.remove("dream-home-shell");
+  };
+  const homeClickAbort = typeof AbortController === "function" ? new AbortController() : null;
+  document.addEventListener?.("click", (event) => {
+    const button = event.target?.closest?.('.group\\/home-suggestions button');
+    if (!button?.closest?.(".dream-home")) return;
+    // A suggestion starts a task in-place.  Its old landing DOM can remain
+    // mounted for a moment, so it must not keep the landing-page skin alive.
+    dismissHome();
+  }, homeClickAbort ? { capture: true, signal: homeClickAbort.signal } : true);
 
   const clearSkinDom = () => {
     document.documentElement?.classList.remove("codex-dream-skin");
@@ -159,7 +176,9 @@
       style.dataset.dreamVersion = "1";
     }
 
-    const home = document.querySelector('[role="main"]:has([data-testid="home-icon"])');
+    const homeCandidate = document.querySelector('[role="main"]:has([data-testid="home-icon"])');
+    if (!homeCandidate) homeState.dismissed = false;
+    const home = homeState.dismissed ? null : homeCandidate;
     for (const candidate of document.querySelectorAll('[role="main"].dream-home')) {
       if (candidate !== home) candidate.classList.remove("dream-home");
     }
@@ -231,6 +250,7 @@
     state?.observer?.disconnect();
     if (state?.timer) clearInterval(state.timer);
     if (state?.scheduler?.timeout) clearTimeout(state.scheduler.timeout);
+    state?.homeClickAbort?.abort?.();
     if (state?.artUrl) URL.revokeObjectURL(state.artUrl);
     delete window[STATE_KEY];
     return true;
@@ -247,7 +267,7 @@
   const observer = new MutationObserver(scheduleEnsure);
   observer.observe(document.documentElement, { childList: true, subtree: true });
   const timer = setInterval(ensure, 5000);
-  window[STATE_KEY] = { ensure, cleanup, observer, timer, scheduler, artUrl, themeId: theme.id, version: "1.8.0" };
+  window[STATE_KEY] = { ensure, cleanup, observer, timer, scheduler, homeClickAbort, artUrl, themeId: theme.id, version: "1.8.1" };
   ensure();
-  return { installed: true, version: "1.8.0", themeId: theme.id };
+  return { installed: true, version: "1.8.1", themeId: theme.id };
 })(__DREAM_CSS_JSON__, __DREAM_ART_JSON__, __DREAM_THEME_JSON__)
